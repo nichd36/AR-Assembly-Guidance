@@ -1,0 +1,135 @@
+<style type="text/css">
+  * {
+      margin: 0px;
+      padding: 0px;
+      box-sizing: border-box;
+  }
+  footer .footer_container {
+      position: relative;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      grid-gap: 20px;
+  }
+
+  footer .footer_container .sec h2 {
+      position: relative;
+      font-weight: 600;
+      margin-bottom: 15px;
+  }
+
+  /* footer .footer_container .sec p {
+      color: rgb(31, 31, 31);
+  } */
+
+  footer .footer_container .sci {
+      margin-top: 20px;
+      margin-left: 0px;
+      display: grid;
+      grid-template-columns: repeat(4, 50px);
+      padding-left: 0px;
+  }
+
+  footer .footer_container .sci li {
+      list-style: none;
+  }
+
+  footer .footer_container .sci li a {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      background: #333;
+      display: grid;
+      align-content: center;
+      justify-content: center;
+      text-decoration: none;
+  }
+
+  footer .footer_container .sci li a i {
+      color: #fff;
+      font-size: 20px;
+  }
+
+  footer .footer_container {
+      position: relative;
+  }
+
+  footer .footer_container ul {
+      padding-left: 0px;
+  }
+
+  footer .footer_container ul li {
+      list-style: none;
+  }
+
+  footer .footer_container ul li a {
+      /* color: #ADAFB7; */
+      text-decoration: none;
+      margin-bottom: 10px;
+      display: inline-block;
+  }
+
+  footer .footer_container ul li a:hover {
+      /* color: #969BA3; */
+      border-bottom: solid white;
+  }
+
+  .copyrightText {
+      width: 100%;
+      background: #fff;
+      padding: 20px 100px 30px;
+      text-align: center;
+      /* color: #555; */
+  }
+
+  @media (max-width: 991px) {
+      footer {
+          padding: 40px;
+      }
+
+      footer .footer_container {
+          width: 100%;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          grid-gap: 20px;
+      }
+
+      .copyrightText {
+          padding: 20px 40px 30px;
+      }
+  }
+
+  @media (max-width: 768px) {
+      footer .footer_container {
+          width: 100%;
+          display: grid;
+          grid-template-columns: repeat(1, 1fr);
+          grid-gap: 20px;
+      }
+  }
+</style>
+
+{% load static %}
+<script src="{% static 'app.js' %}" defer></script>
+
+<!-- footer -->
+<footer>
+  <div class="footer_container">
+      <div class="sec">
+          <h2>About Us</h2>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum at soluta autem sunt.</p>
+      </div>
+  </div>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit1"></script>
+
+</footer>
+<!-- end footer -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+  integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+  crossorigin="anonymous"></script>

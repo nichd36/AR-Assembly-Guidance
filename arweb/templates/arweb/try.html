@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Object Detection</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <style type="text/css">
+        .detect_container {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 50px;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
+</head>
+
+
+<div class="detect_container">
+    <h1 style="color:white;">WELCOME</h1>
+    
+    <div class="image-container">
+        <img style="width: 50%;" id="container" src="{% url 'arweb:live_object_segmentation' %}" alt="Live Object Detection">
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var imgElement = $("#container");
+
+            function updateImage() {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'arweb:live_object_segmentation' %}",
+                    cache: false,
+                    success: function(data) {
+                        imgElement.attr("src", data);
+                        setTimeout(updateImage, 1000); // Update every 1000 milliseconds (1 second)
+                    },
+                    error: function() {
+                        // Handle errors if necessary
+                    }
+                });
+            }
+            console.log("UPDATE IMAGE")
+            updateImage(); // Initial call
+        });
+    </script>
+</div>
+
+{% endblock content %}

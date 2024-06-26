@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+    
+<head>
+    <title>{{ product.name }}</title>
+    <style>
+        body {
+            /* text-align: center; */
+            /* margin: 0; */
+            min-height: 100vh;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            align-items: stretch;
+        }
+
+        #box-container {
+            {% comment %} flex: 1;
+            display: flex;
+            flex-direction: column; {% endcomment %}
+            margin: 6%;
+            max-width: 1800px;
+        }
+
+        .container_box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 50px;
+            margin: 15px;
+        }
+
+        .row {
+                justify-content: center;
+                margin-top: 10px;
+                margin-bottom: 10px;
+        }
+
+        .left {
+                justify-content: left;
+        }
+
+        /* Additional styling for demonstration purposes */
+        .box:nth-child(1) { background-color: #3498db; width: 50%; height: 100%; }
+        .box:nth-child(2) { background-color: #e74c3c; width: 50%; }
+        .box:nth-child(3) { background-color: #2ecc71; width: 50%; }
+    </style>
+</head>
+
+<body>
+        <div class="box-container mx-auto" style="width: 90%;">
+                <div class="row mx-auto" id="row" style="width: 100%;">
+                        <div class="col-4 my-auto p-5">
+                                {% if product.picture %}
+                                        <img src="{{ product.picture.url }}" alt="{{ component.name }} Picture" style="height: 30%; width: 30%;">
+                                {% else %}
+                                        <img class="pb-4" src="{% static 'no_image.png' %}" style="height: 30%; width: 30%;">
+                                {% endif %}
+                                <div class="row">
+                                        <div class="row left p-0">
+                                                <h1 class="highlight p-0">{{ product.name }}</h1>
+                                        </div>
+                                </div>
+
+                                <div class="row left">
+                                        <h5 class="p-0">Product ID: {{ product.product_id }}</h5>
+                                </div>
+
+                        </div>
+                
+                        <div class="col-7 container_bg">
+                                <div class="row">
+                                        <div class="col-3">
+                                                Description
+                                        </div>
+                                        <div class="col-1">
+                                                :
+                                        </div>
+                                        {% if product.desc %}
+                                                <div class="col-8">
+                                                        {{ product.desc }}
+                                                </div>
+                                        {% else %}
+                                                <div class="col-8">
+                                                        <span style="font-style: italic; color: gray;">description not available</span>
+                                                </div>
+                                        {% endif %}
+                                </div>
+
+                                <div class="row">
+                                        <div class="col-3">
+                                                Date created
+                                        </div>
+                                        <div class="col-1">
+                                                :
+                                        </div>
+                                        <div class="col-8">
+                                                {{ product.created_at }}
+                                        </div>
+                                </div>
+
+                                <div class="row">
+                                        <div class="col-3">
+                                                Last updated
+                                        </div>
+                                        <div class="col-1">
+                                                :
+                                        </div>
+                                        <div class="col-8">
+                                                {{ product.updated_at }}
+                                        </div>
+                                </div>
+                        </div>
+
+                        <div class="col-11 container_bg">
+                                <div class="row">
+                                        <div class="col-10">
+                                                <h3 class="pb-3 plus-sans sixhundred">Steps</h3>
+                                        </div>
+                                </div>
+                                
+
+                                {% for step in steps %}
+                                <p>{{ forloop.counter }}. {{ step.title }}</p>
+                                {% endfor %}
+                        </div>
+
+                        <div class="col-11 container_bg">
+                                <div class="row">
+                                        <div class="col-10">
+                                                <h3 class="pb-3 plus-sans sixhundred">Components</h3>
+                                        </div>
+                                </div>
+                                
+                                {% for component in components %}
+                                <p>{{ forloop.counter }}. {{ component.name }}</p>
+                                {% endfor %}
+                        </div>
+                </div>
+        </div>
+
+        <div class="modal" id="popup-box" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Steps</h5>
+                            <button type="button" class="close" onclick="closePopUp()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+</body>
+            
+
+{% endblock content %}

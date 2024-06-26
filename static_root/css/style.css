@@ -1,0 +1,66 @@
+.upcoming {
+        opacity: 0;
+        filter: blur(6px); 
+        transform: translateY(50%);  
+        transition: all 1s;
+    }
+    .upcoming-once {
+        opacity: 0;
+        filter: blur(6px); 
+        transform: translateY(50%);  
+        transition: all 1s;
+    }
+    
+    .upcominggg {
+        opacity: 0;
+        filter: blur(6px); 
+        transform: translateX(50%);  
+        transition: all 1s;
+    }
+    
+    .fog {
+        opacity: 0;
+        filter: blur(10px); 
+        transition: all 1s;
+    }
+    .show {
+        opacity: 1;
+        filter: blur(0px);
+        transform: translateY(0);
+    }
+    span {
+        background-image: linear-gradient(yellow, yellow);
+        background-size: 0% 90%;
+        background-repeat: no-repeat;
+        transition-delay: 1s;
+        transition: background-size 1s ease-in ;
+    }
+    .fog:hover span {
+        background-size: 100% 100%;
+    }
+
+    .pt-sans-regular {
+        font-family: "PT Sans", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+      }
+      
+      .pt-sans-regular-italic {
+        font-family: "PT Sans", sans-serif;
+        font-weight: 400;
+        font-style: italic;
+      }
+      
+      .pt-sans-bold {
+        font-family: "PT Sans", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+      }
+      
+      .pt-sans-bold-italic {
+        font-family: "PT Sans", sans-serif;
+        font-weight: 700;
+        font-style: italic;
+      }
+      
+    

@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+
+<head>
+    <style>
+        button{
+            position: relative;
+            
+            &:before {
+                content: '';
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                margin-top: -12px;
+                width: 24px;
+                height: 24px;
+                border: 2px solid;
+                border-left-color: transparent;
+                border-right-color: transparent;
+                border-radius: 50%;
+                opacity: 0;
+                transition: opacity 0.5s;
+                animation: 0.8s linear infinite rotate;
+            }
+            &.sending{
+                pointer-events: none;
+                cursor: not-allowed;
+                
+                &:before {
+                transition-delay: 0.5s;
+                transition-duration: 1s;
+                opacity: 1;
+                }
+            }
+            }
+
+            .dark-mode .btn-outline-primary:not(:hover) {
+                color: white;
+            }
+
+        button.btn-outline-primary {
+            color: rgb(69, 69, 69);
+            
+            .dark-mode & {
+                --bs-btn-hover-color: rgb(191, 152, 248);
+            }
+        }
+        .home-container {
+            padding-left: 5%;
+            padding-right: 5%;
+            padding-top: 2%;
+            min-height: 80vh;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            width: 100%;
+            height: 50vh;
+        }
+        .button-container a {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            margin-right: 20px;
+            text-decoration: none;
+        }
+        .button-container .neumorphism_button h3 {
+            font-family: 'Plus Jakarta Sans';
+            font-weight: 400;
+        }
+        .home-btn {
+            width: 100%;
+            height: 50%;
+            border-radius: 25px;
+            padding: 10px;
+            text-align: center;
+            background-color: transparent;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .home-btn:hover {
+            transform: scale(1.1);
+            border-color: black;
+        }
+
+        .dark-mode .home-btn {
+            border-color: white;
+        }
+        .neumorphism_button {
+            border: 0px solid wheat; /* Initial border */
+            text-align: center;
+            margin-bottom: 25px;
+            z-index: 0;
+
+            .dark-mode & {
+                z-index: 0;
+            }
+
+
+            &:hover {
+                transform: scale(1.1);
+                background-color: transparent;
+                border: 2px solid wheat; /* Border on hover */
+                color: rgb(25, 0, 138);
+                box-shadow: 0 0 20px rgba(0, 0, 255, 0.5);
+                z-index: 100;
+
+
+                .dark-mode & {
+                    color: white;
+                    z-index: 1000;
+                    box-shadow: 0 0 20px rgba(181, 181, 255, 0.972);
+                }
+            }
+        }
+    </style>
+</head>
+
+<title>Home - Assembly System</title>
+
+<div class="home-container">
+        <h1>Welcome, <span class="highlight">{{ user.username }}</span>!</h1>
+
+        {% if request.user.is_authenticated %}
+        {% if request.user.is_superuser %}
+        <p>You have admin priviliges</p>
+
+        <div class="row button-container" style="max-width: 100%; height: 100%;">
+            <div class="col-6">
+                <a class="m-0" href="{% url 'manage_components' %}" style="width: 100%; height: 30%;">
+                    <button class="neumorphism_button mx-auto">
+                        <img class="pb-4 row mx-auto" src="{% static 'manage_components.png' %}" style="height: 30%; width: 30%;">
+                        <h2 class="plus-sans fivehundred mx-auto text-center">Manage Components</h2>
+                    </button>
+                </a>
+
+                <a class="m-0" href="{% url 'manage_products' %}" style="width: 100%; height: 30%;">
+                    <button class="neumorphism_button mx-auto">
+                        <img class="pb-4 row mx-auto" src="{% static 'frl.png' %}" style="height: 30%; width: 30%;">
+                        <h2 class="plus-sans fivehundred mx-auto text-center">Manage Products</h2>
+                    </button>
+                </a>
+            </div>
+
+            <div class="col-6" style="height: 100%;">
+                <a class="m-0" href="{% url 'register' %}" style="width: 100%; height: 30%;">
+                    <div class="neumorphism_button mx-auto">
+                        <img class="pb-4 row mx-auto" src="{% static 'register.png' %}" style="height: 30%; width: 30%;">
+                        <h2 class="plus-sans fivehundred mx-auto text-center">Add a new account</h2>
+                    </div>
+                </a>
+    
+                <a class="m-0" href="{% url 'manage_accounts' %}" style="width: 100%; height: 30%;">
+                    <div class="neumorphism_button mx-auto">
+                        <img class="pb-4 row mx-auto" src="{% static 'accounts.png' %}" style="height: 30%; width: 30%;">
+                        <h2 class="plus-sans fivehundred mx-auto text-center">Manage Accounts</h2>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        {% else %}
+        <p class="my-1">Your employee ID: {{ user.emp_id }}</p>
+        <p class="pt-0 mb-4">Please select a product that you want to assemble</p>
+
+        <div class="row">
+            <div class="col" style="width: 100%; max-width: 1500px;">
+
+                {% for product in products %}
+                    <div class="row box-container mx-0" style="align-items: center; text-align: left; width: 100%;">
+                        <div class="col-1">
+                            <p class="plus-sans fourhundred" style="color: grey;">{{ forloop.counter }}</p>
+                        </div>
+    
+                        <div class="col-10">
+                            <div class="row pb-2">
+                                <h3 class="plus-sans sevenhundred my-0">{{ product.name }}</h3>
+                            </div>
+        
+                            <div class="row">
+                                <p class="pt-sans my-0">{{ product.desc }}</p>
+                            </div>
+
+                            <div class="row d-block d-md-none mt-4 pl-2">
+                                <a class="rounded_button" onclick="openPopUp({{ forloop.counter }})">Details</a>
+                            </div>
+                        </div>
+    
+                        <div class="col-md-1 col-0 d-none d-md-block">
+                            <a class="neumorphism_button" onclick="openPopUp({{ forloop.counter }})">i</a>
+                        </div>
+                    </div>
+
+
+
+                <div class="modal" id="popup-box{{ forloop.counter }}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title plus-sans sevenhundred">{{ product.name }}</h5>
+                                <button type="button" class="close" onclick="closePopUp({{ forloop.counter }})">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                {% if product.components %}
+                                <p class="mb-1">A total of {{ product.components|length }} component(s) are needed:</p>
+                                <ul>
+                                {% for component in product.components %}
+                                    <p class="pt-sans mb-0">{{ forloop.counter }}.&nbsp;&nbsp;{{ component.name }}</p>
+                                {% endfor %}
+                                </ul>
+                                {% else %}
+                                    <p class="pt-sans" style="font-style: italic;">Components not available <span>⚠️</span></p>
+                                {% endif %}
+
+                                {% if product.steps %}
+                                <p class="mb-1">This product has {{ product.steps|length }} step(s) in total:</p>
+                                <ul>
+                                    {% for step in product.steps %}
+                                        <p class="pt-sans mb-0">{{ forloop.counter }}.&nbsp;&nbsp;{{ step }}</p>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                    <p class="pt-sans" style="font-style: italic;">Steps not available <span>⚠️</span></p>
+                                {% endif %}
+                            </div>
+
+                            <div class="modal-footer">
+                                <a href="{% url 'arweb:yolo' product.product_id %}" style="text-decoration: none;">
+                                    <div class="button-link">
+                                        <p class="my-0 mx-auto plus-sans fivehundred">Start assembly</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+</div>
+
+{% endblock content %}

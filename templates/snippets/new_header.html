@@ -1,0 +1,276 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<style type="text/css">
+    
+    .text{
+        background-color: #D9EDFF;
+        font-family: Helvetica, sans-serif;
+    }
+    .container {
+    max-width: 960px;
+    }
+    .pricing-header {
+    max-width: 700px;
+    }
+
+    
+    .btn{
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+    .navbar.upcoming{
+        transform: translateY(0%);
+        {% comment %} transition: all 2s; {% endcomment %}
+        width: 100%;
+    }
+
+    .navbar.sticky {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        {% comment %} background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)); {% endcomment %}
+      }
+     
+.menu-pic{
+    width:50px;
+    height:50px;
+    /* border-radius: 50%; */
+    cursor: pointer;
+    /* box-shadow: 0px 0px 10px rgba(255, 255, 255, 1.0); */
+}
+
+.user-prof:hover {
+    width:50px;
+    height:50px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0px 0px 30px rgba(64, 22, 253, 0.8);
+}
+.user-prof.background {
+    box-shadow: 0px 0px 30px rgba(64, 222, 25, 0.8);
+}
+.sub-menu-wrap{
+    position: absolute;
+    top: 100%;
+    right: 5%;
+    width: 280px;  
+    max-height: 0px;
+    overflow: hidden;  
+    transition: max-height 0.5s;
+}
+
+.sub-menu-wrap.open-menu{
+    max-height: 400px;
+}
+
+.sub-menu{
+    background: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 0px 0px 10px rgba(58, 58, 58, 0.463);
+    justify-content: left;
+}
+
+.sub-menu-link{
+    padding-left: 15px;
+    color: rgb(106, 106, 106);
+    text-decoration: none;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    display: flex;
+}
+.sub-menu-link:hover{
+    background-color: #c2dafbc3;
+    border-radius: 10px;
+}
+
+.header{
+    text-decoration: none;
+    color: white;
+}
+.header:hover{
+    text-decoration: none;
+    color: white;
+    border-bottom: #D9EDFF solid;
+
+}
+#google_translate_element select{
+   background-color:#f6edfd;
+   color:#383ffa;
+   border: none;
+   border-radius:3px;
+   padding:6px 8px
+ }
+
+{% comment %} .goog-logo-link,.goog-te-gadget span{
+
+    display:none !important;
+
+    } {% endcomment %}
+
+    {% comment %} .goog-te-gadget{
+
+  color:transparent!important;
+  font-size :0;
+
+  } {% endcomment %}
+
+  .VIpgJd-ZVi9od-ORHb-OEVmcd.skiptranslate {
+    display: none !important;
+    } 
+body {
+    top: 0px !important; 
+    }
+#whiteText{
+    border: 2px white solid; 
+    color: white;
+}
+#whiteText:hover{
+    color: black;
+    background: white;
+}   
+.header{
+    font-size: 20px;
+}  
+@media only screen and (min-width: 931px) {
+    /* hide the hamburger */
+    .navbar-toggler {
+      display: none;
+    }
+    /* show all the nav-buttons */
+    .nav-button {
+      display: inline;
+    }
+  }
+  @media only screen and (max-width: 930px) {
+    /* show everything with the hamburger class */
+    .navbar-toggler {
+      display: inline;
+    }
+    /* hide all the nav-buttons */
+    .nav-button {
+      display: none;
+    }
+  }
+  .sidenav {
+    height: 100vh;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: white;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    color: rgb(106, 106, 106);
+  }
+  
+  .sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+  }
+  
+  .sidenav a:hover {
+    color: #383ffa;
+  }
+  
+  .sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+  }
+</style>
+
+{% load static %}
+{% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+
+<script>
+    var lightMenuUrl = "{% static 'menu_grey.png' %}";
+    var closeLightMenuUrl = "{% static 'close_grey.png' %}";
+</script>
+
+<script src="{% static 'app.js' %}" defer></script>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"
+    integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+    crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                {pageLanguage: 'en'},
+                'google_translate_element'
+            );
+        }
+    </script>
+ 
+    <script type="text/javascript"
+            src=
+"https://translate.google.com/translate_a/element.js?
+cb=googleTranslateElementInit">
+    </script> 
+
+
+    <nav class="text-header navbar navbar-expand-lg navbar-light px-2" style="z-index: 3; width: 100%" id="myHeader">
+        <div id="navbar" style="width: 100%">
+            {% if request.user.is_authenticated %}     
+                {% comment %} <span style="float: left; font-size:30px;cursor:pointer;color: white;" onclick="openNav()">&#9776;</span> {% endcomment %}
+                <a href="{% url 'home' %}">
+                    <img style="float: left;" class="menu-pic" src="{% static 'home_grey.png' %}" alt="home">
+                </a>
+                
+                <img style="float: right;" class="menu-pic p-2" src="{% static 'menu_grey.png' %}" onclick="toggleMenu()" id="hamburger-menu">
+
+                <div class="sub-menu-wrap" id="subMenu">
+                    <div class="sub-menu" style="justify-content: flex-start;">
+                        <a href="{% url 'my_account_view' %}"data-toggle class="sub-menu-link">{{request.user.username}}</a>
+
+                        <hr style=" margin: 15px 0 10px;"> 
+
+                        <p id="theme-toggle" class="sub-menu-link">Toggle theme</p>
+
+                        <hr style=" margin: 15px 0 10px;"> 
+
+                        <div style=" text-align: left" class="mx-2" id="google_translate_element"></div>
+
+                        <hr style=" margin: 15px 0 10px;"> 
+
+                        <a href="" class="sub-menu-link">Change Password</a>
+                        
+                        <hr style=" margin: 15px 0 10px;"> 
+
+                        <a href="{% url 'logout' %}" class="sub-menu-link">Logout</a>
+                        
+                    </div>
+                </div>
+            {% else %}                
+                <img style="float: right;" class="menu-pic p-2" src="{% static 'menu_grey.png' %}" onclick="toggleMenu()" id="hamburger-menu">
+
+                <div class="sub-menu-wrap" id="subMenu">
+                    <div class="sub-menu" style="justify-content: flex-start;">
+                        <a href="mailto:nicho.lim36@gmail.com?subject=Inquiry">Contact admin</a> 
+
+                        <hr style=" margin: 15px 0 10px;"> 
+
+                        <p id="theme-toggle" class="sub-menu-link">Toggle theme</p>
+
+                        <hr style=" margin: 15px 0 10px;"> 
+
+                        <div style=" text-align: left" class="mx-2" id="google_translate_element"></div>
+                    </div>
+            {% endif %}
+        </div>
+        
+    </nav>

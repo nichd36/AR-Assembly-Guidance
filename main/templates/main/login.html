@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+<head>
+
+    <title>Login - Assembly System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            align-items: center;
+            min-height: 100vh;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: #F1F2F2;
+            color: black;
+        }
+
+        #login-container {
+            width: 90%;
+            max-width: 1800px;
+            margin-top: 5%;
+            margin-bottom: auto;
+            border-radius: 50px;
+            background-color: #EDEEEE;
+            border: solid #E0E1E1;
+            padding: 20px;
+        }
+
+        #ar-system {
+            height: 50%;
+            padding: 20px;
+            text-align: center;
+            border-right: 2px solid #1e1e20;
+        }
+
+        .form-container {
+            margin: auto;
+            padding: 15px;
+        }
+
+        .form-container form {
+            max-width: 60%;
+            margin: auto;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            border: none;
+            outline: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            background-color: white !important;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        #login-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="row mx-auto box-container" style="width: 90%;">
+
+        <div class="col-6 my-auto d-none d-md-block" id="ar-system">
+            <h3 style="font-family: 'Plus Jakarta Sans'; font-weight: 700">Welcome to AR-enabled Assembly Training System</h3>
+            <h4 class="my-4 secondary_text"><small style="font-family: 'Plus Jakarta Sans'; font-weight: 400;">Please login with your credentials</small></h4>
+        </div>
+
+        <div class="row mx-auto my-4 d-md-none">
+            <h4 style="font-family: 'Plus Jakarta Sans'; font-weight: 700">Welcome to AR-enabled Assembly Training System</h4>
+            <h5 class="my-4 secondary_text"><small style="font-family: 'Plus Jakarta Sans'; font-weight: 400;">Please login with your credentials</small></h5>
+            <hr>
+        </div>
+
+        <div class="row form-container d-md-none" style="width: 100%;">
+            <form action="{% url 'login' %}" method="post" style="max-width: 100%;">
+                {% csrf_token %}
+                <input style="width: 100%;" type="email" name="email" id="inputEmail" class="inputs" placeholder="Email address" required autofocus>
+                <input style="width: 100%;" type="password" name="password" id="inputPassword" class="inputs" placeholder="Password" required>
+
+                <button style="border-radius: 10px; width: 50%;" class="my-4" id="login-btn" type="submit">Login</button>
+            </form>
+
+            <div style="padding-top: 30px; padding-bottom: 30px;">
+                <a class="m-auto" href="{% url 'password_reset' %}">Forgotten your password?</a>
+            </div>
+
+            {% for field in login_form %}
+                {% for error in field.errors %}
+                    <p style="color: red; font-size: 1.3vmax;">{{error}}</p>
+                {% endfor %}
+            {% endfor %}
+
+            {% if login_form.non_field_errors %}
+                <div style="color:red; font-size: 1.3vmax;">
+                    <p>{{login_form.non_field_errors}}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-6 form-container d-none d-md-block">
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <input type="email" name="email" id="inputEmail" class="inputs" placeholder="Email address" required autofocus>
+                <input type="password" name="password" id="inputPassword" class="inputs" placeholder="Password" required>
+
+                <button style="border-radius: 10px; width: 50%;" class="my-4" id="login-btn" type="submit">Login</button>
+            </form>
+
+            <div style="padding-top: 30px; padding-bottom: 30px;">
+                <a class="m-auto" href="{% url 'password_reset' %}">Forgotten your password?</a>
+            </div>
+
+            {% for field in login_form %}
+                {% for error in field.errors %}
+                    <p style="color: red; font-size: 1.3vmax;">{{error}}</p>
+                {% endfor %}
+            {% endfor %}
+
+            {% if login_form.non_field_errors %}
+                <div style="color:red; font-size: 1.3vmax;">
+                    <p>{{login_form.non_field_errors}}</p>
+                </div>
+            {% endif %}
+        </div>
+
+
+    </div>
+</body>
+
+{% endblock content %}

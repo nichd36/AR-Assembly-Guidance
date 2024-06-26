@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+    
+<head>
+    <title>Hi, {{ account.username }}!</title>
+    <style>
+        body {
+            /* text-align: center; */
+            /* margin: 0; */
+            min-height: 100vh;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            align-items: stretch;
+        }
+
+        #box-container {
+            {% comment %} flex: 1;
+            display: flex;
+            flex-direction: column; {% endcomment %}
+            margin: 6%;
+            max-width: 1800px;
+        }
+
+        .container_box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 50px;
+            margin: 15px;
+        }
+
+        .row {
+                justify-content: center;
+        }
+
+        .left {
+                justify-content: left;
+        }
+
+        /* Additional styling for demonstration purposes */
+        .box:nth-child(1) { background-color: #3498db; width: 50%; height: 100%; }
+        .box:nth-child(2) { background-color: #e74c3c; width: 50%; }
+        .box:nth-child(3) { background-color: #2ecc71; width: 50%; }
+    </style>
+</head>
+
+<body>
+        <div class="box-container mx-auto" style="width: 90%;">
+                <div class="row" id="row" style="width: 100%;">
+                        <div class="col-4 my-auto py-4">
+                                <img class="pb-4" src="{% static 'profile-circle.256x256.png' %}" style="height: 30%; width: 30%;">
+                                <div class="row">
+                                        <div class="row left p-0">
+                                                <h1 class="highlight p-0">{{ account.username }}</h1>
+                                        </div>
+                                </div>
+
+                                <div class="row left">
+                                        {% if account.is_admin %}
+                                                <h4 class="p-0 plus-sans sixhundred" style="color: rgb(78, 188, 251)">Admin</h4>
+                                        {% else %}
+                                                <span class="p-0" style="color: rgba(106, 106, 106, 0.581);">Assembler</span>
+                                        {% endif %}
+                                        
+                                        <h5 class="p-0">Employee ID: {{ account.emp_id }}</h5>
+                                </div>
+                        </div>
+                
+                        <div class="col-7 container_bg">
+                                <div class="row">
+                                        {% if account.is_online %}
+                                                <h3 class="plus-sans fourhundred col-4" style="color: #27CD41;">
+                                                        Online
+                                                </h3>
+                                        {% else %}
+                                        <div class="col-4">
+                                                Last seen:
+                                        </div>
+                                        <div class="col-4">
+                                                {{ account.last_seen }}
+                                        </div>
+                                        {% endif %}
+                                </div>
+                                
+                                <div class="row">
+                                        <div class="col-4">
+                                                Last login:
+                                        </div>
+                                        <div class="col-8">
+                                                {{ account.last_login }}
+                                        </div>
+                                </div>
+
+                                <div class="row">
+                                        <div class="col-4">
+                                                Date Joined:
+                                        </div>
+                                        <div class="col-4">
+                                                {{ account.date_joined }}
+                                        </div>
+                                </div>
+
+                                
+                        </div>
+                </div>
+        </div>
+</body>
+
+{% endblock content %}

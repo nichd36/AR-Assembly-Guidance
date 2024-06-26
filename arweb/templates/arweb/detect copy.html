@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Object Detection</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <style type="text/css">
+        .detect_container {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 50px;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
+</head>
+
+
+<div class="detect_container">
+    <h1 style="color:white;">WELCOME</h1>
+    
+    <video id='video' autoplay playsinline></video>
+    <canvas id="canvas" style='display:none;' width="300" height="400"></canvas>
+    
+    <div style="border-radius: 10px;" class="align-center-scale">
+        <img id='client' class="video" src='https://cdn.discordapp.com/attachments/848543264783990804/1051901701654851705/face.gif' alt="screen">
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var video = document.getElementById('video');
+      var img = document.getElementById("client");
+      var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+      var mode = true;
+      
+      video.width = 300;
+      video.height = 400;
+  
+      // Scale the graph canvas accordingly to the window size
+      var widthupdate = window.innerWidth*0.3;
+      var heightupdate = window.innerHeight*0.4;
+  
+      function Mode(){
+          if (mode == true){
+              mode = false;
+              var ws = new WebSocket(
+                  ws_scheme + '://' + window.location.host + '/'
+              );
+              ws.onopen = (event) => {
+                  console.log('websocket connected!!!');
+              };
+              ws.onmessage = (event) => {
+            //   console.log("WebSocket message received: ", event.data);
+              frameUpdate = event.data;
+              img.src = "data:image/jpeg;base64," + frameUpdate;
+              
+              };
+              ws.onclose = (event) => {
+                  console.log('Close');
+              };
+              if (navigator.mediaDevices.getUserMedia) {
+              navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment'} })
+              .then(function(stream) {
+              video.srcObject = stream;
+              video.setAttribute('autoplay', true);
+              video.play();
+              var width = video.width;
+              var height = video.height;
+              var delay = 200; // adjust the delay to fit your needs (ms)
+              var jpegQuality = 0.2; // adjust the quality to fit your needs (0.0 -> 1.0)
+  
+              setInterval(function() {
+              context.drawImage(video, 0, 0, width, height);
+              console.log("IMAGE MADE")
+              canvas.toBlob(function(blob) {
+                  if (ws.readyState == WebSocket.OPEN) {
+                      if (mode == true){
+                          ws.send(new Uint8Array([]));
+                      } else {
+                          ws.send(blob);
+                      }
+                  }
+              }, 'image/jpeg', jpegQuality);
+              }, delay);
+              });}
+          }
+          else if (mode == false){
+              mode = true;
+              video.pause();
+              video.srcObject.getVideoTracks()[0].stop();
+              video.srcObject = null;
+              setTimeout(function() {
+                  clearInterval(createchart);
+              },500);
+          }
+      };
+
+      Mode()
+      </script>
+</div>
+
+{% endblock content %}

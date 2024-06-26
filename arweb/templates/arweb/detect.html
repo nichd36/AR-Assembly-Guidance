@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Assembling: {{ product.name }}</title>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <style type="text/css">
+            .image-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .modal-backdrop{
+                z-index: 6;
+            }
+            .step {
+                display: none;
+            }
+            .active-step {
+                display: block;
+            }
+            .main {
+                max-height: fit-content;
+                margin-bottom: 0;
+            }
+            .done {
+                color:green;
+            }
+        </style>
+    </head>
+
+    <audio id="correctAudio" src="{% static 'correct.mp3' %}" type="audio/mpeg"></audio>
+    <audio id="errorAudio" src="{% static 'error.mp3' %}" type="audio/mpeg"></audio>
+
+    <div class="p-3" style="border-radius: 0px;">
+        {% for step in steps %}
+            <div class="step plus-sans twohundred {% if forloop.first %}active-step{% endif %}" id="step{{ forloop.counter }}">
+                <h4 class="sevenhundred" id="title{{ forloop.counter }}">Step {{ forloop.counter }}: {{ step.title }}</h4>
+
+                <p id="whatyouneed{{ forloop.counter }}">What you need: {% for component in step.components.all %}{{ component }}, {% endfor %}</p>
+            </div>
+
+            <div class="modal" id="popup-box{{ forloop.counter }}" tabindex="-1" role="dialog" style="padding-top: 15%; max-width: 100%;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title plus-sans sevenhundred">Oops! Here's a hint for step {{ forloop.counter }}</h5>
+                            <button type="button" class="close" onclick="closePopUp({{ forloop.counter }})">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% if step.picture %}
+                                <img style="max-width: 100%; border-radius: 15px; margin-bottom: 20px;" src="{{ step.picture.url }}">
+                            {% else %}
+                                <em><p>Image not available</p></em>
+                            {% endif %}
+
+                            {% if step.instruction %}
+                                <p>{{ step.instruction }}</p>
+                                {% else %}
+                                <em><p>Instructions are not available</p></em>
+                            {% endif %}
+
+                            <em><p>Click the X button on the top right to dismiss this message</p></em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="row mx-auto" style="max-width: 100%;">
+            <div class="col px-0">
+                <button class="button-link plus-sans fivehundred" id="checkButton">Check</button>
+            </div>
+            <div class="col my-auto">
+                <div style="max-width: 150px; overflow: hidden;">
+                    <p class="my-auto" id="countdownTimer"></p>
+                </div>
+            </div>
+            <div class="col text-right px-0" style="width: fit-content; vertical-align: middle;">
+                <button class="button-link plus-sans fivehundred" id="nextButton" style="display: none;">Next</button>
+            </div>
+        </div>
+
+        <div class="row mx-auto mt-2" style="max-width: 100%;">
+            <div id="hint" class="row m-0 button-link p-0" style="width: fit-content; background-color: #FED100;">
+                <div class="align-items-center my-auto pr-0" style="display: inline-block; width: fit-content;">
+                    <p class="plus-sans fivehundred p-0 m-0" style="color: rgb(60, 60, 60);">Hint</p>
+                </div>
+                <img class="m-0 p-2" src="{% static 'hint.png' %}" style="height: 2em; width: auto;">
+            </div>
+            <div class="col px-1" style="width: fit-content; vertical-align: middle;">
+                <button class="button-link plus-sans fivehundred" style="background-color: rgb(112, 112, 112); color: white;" id="backButton">↺ Previous step</button>
+            </div>
+        </div>
+
+
+    </div>
+
+    <video style="width: 100%; border-radius: 25px;" id='camera_src' autoplay playsinline></video>
+    <canvas id="canvas" style='display:none; max-width: 100%;'></canvas>
+
+    <div style="border-radius: 10px; width: 100%;" class="align-center-scale">
+        <img style="display: none; width: 100%; border-radius: 25px; padding: 0;" id='client' src="https://live.staticflickr.com/65535/53529488187_bff285b40b_b.jpg" class="video" alt="screen">
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+    // alert("Increase your volume for sound feedback. Please confirm your acknowledgment to start.");
+    var currentStep = 1;
+    var totalSteps = {{ steps|length }};
+    var stepComponents = {
+        {% for step in steps %}
+            {{ step.order }}: [
+                {% for component in step.components.all %}
+                    "{{ component }}",
+                {% endfor %}
+            ],
+        {% endfor %}
+    };
+    var currentComponents
+    var countdownInterval;
+    var timeoutId;
+    var checkCount = 0;
+    var foundMatch;
+    var sendTime;
+    var receiveTime;
+    var ws;
+    var sendingCount = 0;
+    var interval_ws;
+
+    $("#backButton").hide();
+    $("#backButton").click(goToPreviousStep);
+    $("#nextButton").click(goToNextStep);
+    $("#hint").click(function() {
+        openPopUp(currentStep);
+    });
+
+    function goToPreviousStep() {
+        stopMode()
+        $("#checkButton").show();
+        $("#nextButton").hide();
+        $("#camera_src").show();
+        startCamera()
+        checkCount = 0; // Reset checkCount
+        var title = document.getElementById("title"+currentStep);
+        title.textContent = title.textContent.replace(" ✅", "");
+        title.classList.remove("done");
+
+        $(".step").removeClass("active-step"); // Remove active-step class from all steps
+
+        currentStep--; // Decrement currentStep to go to the previous step
+
+        if (currentStep == 1) {
+            $("#backButton").hide();
+        }
+
+        $("#step" + currentStep).addClass("active-step");
+        var title = document.getElementById("title"+currentStep);
+        title.textContent = title.textContent.replace(" ✅", "");
+        title.classList.remove("done");
+    }
+
+    function goToNextStep() {
+        $("#backButton").show();
+        $("#nextButton").hide();
+        $("#camera_src").show();
+        startCamera()
+        $("#checkButton").show();
+        checkCount = 0;
+
+        $(".step").removeClass("active-step");
+
+        currentStep++;
+
+        if (currentStep <= totalSteps) {
+            console.log("next")
+            $("#step" + currentStep).addClass("active-step");
+        } else {
+            // Redirect to home page
+            console.log("home")
+            window.location.href = "/";
+        }
+    }
+
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var video = document.getElementById('camera_src');
+    var img = document.getElementById("client");
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var mode = true;
+    var mode_first = true;
+
+    video.width = 300;
+    video.height = 480;
+
+    // Scale the graph canvas accordingly to the window size
+    var widthupdate = window.innerWidth*0.1;
+    var heightupdate = window.innerHeight*0.4;
+
+    function setCanvasSize() {
+        // Size configured as it will be sent to the server side
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        console.log(video.width + "x" + video.height); // Log canvas' width and height
+    }
+
+    function startCamera() {
+        $("#client").hide();
+        var samsung_camera = false
+        var deviceId
+
+        if (navigator.mediaDevices.getUserMedia) {
+            var constraints = {
+                video: {
+                    facingMode: 'environment'
+                }
+            };
+            navigator.mediaDevices.enumerateDevices()
+                .then(function(devices) {
+                    devices.forEach(function(device) {
+                        if (device.kind === 'videoinput' && device.label.toLowerCase().includes('camera2 0, facing back')) {
+                            deviceId = device.deviceId;
+                            samsung_camera = true
+                        }
+                    });
+
+                    if (samsung_camera) {
+                        constraints.video.deviceId = { exact: deviceId };
+                        console.log('Found main camera, device id ', deviceId);
+                    } else {
+                        console.log('Camera "camera2 0, facing back" not found.');
+                    }
+                    console.log(constraints)
+                    navigator.mediaDevices.getUserMedia(constraints)
+                        .then(function(stream) {
+                            video.srcObject = stream;
+                            video.setAttribute('autoplay', true);
+                            video.play();
+                        })
+                        .catch(function(error) {
+                            console.error('Error accessing camera:', error);
+                        });
+                })
+                .catch(function(error) {
+                    console.error('Error enumerating devices:', error);
+                });
+        }
+    }
+
+    function sendViaWebSocket(){
+        if (checkCount >= 5) {
+            $("#nextButton").show();
+        }
+        if (mode == true){
+            mode = false;
+            sendingCount++;
+            console.error("SENDING COUNT", sendingCount)
+            checkCount++;
+            ws = new WebSocket(
+                ws_scheme + '://' + window.location.host + '/'
+            );
+            ws.onopen = (event) => {
+                console.log('WebSocket Connected!');
+            };
+            ws.onmessage = (event) => {
+                var data = JSON.parse(event.data);
+                receiveTime = Date.now();
+                var latency = receiveTime - sendTime;
+                console.log("Latency:", latency, "ms");
+                frameUpdate = data.image;
+
+                if ('detected_object_names' in data) {
+                    console.log("detected object names", data.detected_object_names)
+
+                    currentComponents = stepComponents[currentStep];
+                    console.log("components CURRENT", currentComponents)
+
+                    var detectedObjects = data.detected_object_names;
+                    foundMatch = currentComponents.every(component => detectedObjects.includes(component));
+        
+                    if (foundMatch){
+                        // Display the processed frame into the HTML
+                        img.src = "data:image/jpeg;base64," + frameUpdate;
+                        $("#client").show();
+                        // Close the WebSocket connection
+                        ws.close();
+                        // Play the correct audio
+                        var audioElement = document.getElementById('correctAudio');
+                        audioElement.play();
+                        
+                        if (currentStep === totalSteps) {
+                            $("#nextButton").text("Done");
+                        }
+                        var title = document.getElementById("title"+currentStep);
+                        if (title) {
+                            title.classList.add("done");
+                            title.textContent += " ✅";
+                        }
+                        // var whatyouneed = document.getElementById("whatyouneed"+currentStep);
+                        // if (whatyouneed) {
+                        //     whatyouneed.textContent = "Great job! 👏";
+                        // }
+                        $("#checkButton").hide();
+                        $("#nextButton").show();
+                        stopMode()
+                    }else{
+                        img.src = "data:image/jpeg;base64," + frameUpdate;
+                    }
+                }else{
+                        img.src = "data:image/jpeg;base64," + frameUpdate;
+                    }
+            };
+            ws.onclose = (event) => {
+                console.log('WebSocket connection terminated');
+            };
+
+
+            if (navigator.mediaDevices.getUserMedia) {
+                var constraints = {
+                    video: {
+                        facingMode: 'environment'
+                    }
+                };
+                var samsung_camera = false
+                navigator.mediaDevices.enumerateDevices()
+                    .then(function(devices) {
+                        devices.forEach(function(device) {
+                            if (device.kind === 'videoinput' && device.label.toLowerCase().includes('camera2 0, facing back')) {
+                                deviceId = device.deviceId;
+                                samsung_camera = true
+                            }
+                        });
+
+                        if (samsung_camera) {
+                            constraints.video.deviceId = { exact: deviceId };
+                            console.log('device id ', deviceId);
+                        } else {
+                            console.error('Camera "camera2 0" not found.');
+                        }
+
+                        navigator.mediaDevices.getUserMedia(constraints)
+                            .then(function(stream) {
+                                video.srcObject = stream;
+                                video.setAttribute('autoplay', true);
+                                video.play();
+                                video.addEventListener('loadedmetadata', setCanvasSize);
+
+                                var delay = 600; // adjust the delay to fit your needs (ms)
+                                var jpegQuality = 0.4; // adjust the quality to fit your needs (0.0 -> 1.0)
+                                clearInterval(interval_ws);
+                                interval_ws = setInterval(function() {
+                                    context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                                    canvas.toBlob(function(blob) {
+                                        if (ws.readyState == WebSocket.OPEN) {
+                                            if (mode == false){
+                                                // Converting blob to base64
+                                                var reader = new FileReader();
+                                                reader.readAsDataURL(blob);
+                                                reader.onloadend = function() {
+                                                    // Construct the message object with base64-based blob & currentComponents
+                                                    var base64data = reader.result;
+                                                    var message = {
+                                                        image: base64data,
+                                                        currentComponents: stepComponents[currentStep]
+                                                    };
+                                                    // Record current time
+                                                    sendTime = Date.now();
+                                                    // Convert the message to JSON before sending
+                                                    ws.send(JSON.stringify(message));
+                                                };
+                                            }
+                                        }
+                                    }, 'image/jpeg', jpegQuality);
+                                }, delay);
+                            });
+                    })
+                    .catch(function(error) {
+                        console.error('Error enumerating devices:', error);
+                    });
+            }
+        }
+        else if (mode == false){
+            clearInterval(interval_ws);
+            sendingCount--;
+            ws.close();
+            mode = true;
+            console.log("Function stopped, status: ", mode)
+            stopMode()
+        }
+    };
+
+    function enumerateDevices() {
+        navigator.mediaDevices.enumerateDevices()
+            .then(function(devices) {
+                console.log("Devices:", devices);
+            })
+            .catch(function(err) {
+                console.error("Error enumerating devices:", err);
+            });
+    }
+    enumerateDevices()
+
+    function stopMode() {
+        clearTimeout(timeoutId);
+        console.log("Timeout CLEARED")
+        clearInterval(countdownInterval);
+
+        if (!foundMatch){
+            startCamera()
+        } else {
+            $("#camera_src").hide();
+            console.log('ELEMENT hidden');
+        }
+
+        foundMatch = false;
+
+        mode = true;
+        // video.pause();
+        // video.srcObject.getVideoTracks()[0].stop();
+        // video.srcObject = null;
+
+        $("#checkButton").text("Check");
+        $("#countdownTimer").text("");
+    }
+
+    // Call the function to enumerate devices
+    startCamera();
+
+    $("#checkButton").click(function() {
+        clearTimeout(timeoutId);
+        console.log("changing button MODE IS ", mode)
+        sendViaWebSocket(); // Run the mode function immediately when button "Check" is clicked
+
+
+        if (mode == true) {
+            ws.close();
+            $(this).text("Check");
+        } else {
+            $(this).text("Cancel");
+
+            var secondsLeft = 10; // Initial value for the countdown
+
+            countdownInterval = setInterval(function() {
+                secondsLeft--;
+                $("#countdownTimer").text("Seconds left: " + secondsLeft);
+                console.log(secondsLeft)
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000); // Update the countdown every second, change text per 1 second
+        }
+
+        timeoutId = setTimeout(function() {
+            if (!mode){
+                sendViaWebSocket();
+                $("#checkButton").text("Check");
+                $("#countdownTimer").text("Times out").addClass("plus-sans fivehundred");;
+                clearInterval(countdownInterval);
+                console.error("Times Out, showing pop up", checkCount)
+                openPopUp(currentStep) // To show the hints (if available)
+                var audioElement = document.getElementById('errorAudio');
+                audioElement.play();
+            }
+        },10000); // Time out in milliseconds, 10000ms = 10s
+    });
+
+    function openPopUp(currentStep) {
+        document.getElementById("popup-box"+currentStep).style.display = "block";
+    }
+
+    function closePopUp(currentStep) {
+        document.getElementById("popup-box"+currentStep).style.display = "none";
+    }
+    </script>
+
+{% endblock content %}

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+<head>
+
+    <title>Register a new assembler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1D2833;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #e1e3e6;
+        }
+
+        #login-container {
+            width: 90%;
+            max-width: 1800px;
+            display: flex;
+            margin-top: 5%;
+            margin-bottom: auto;
+
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        #ar-system {
+            flex: 1;
+            height: 50%;
+            padding: 20px;
+            text-align: center;
+            border-right: 2px solid #1e1e20;
+        }
+
+        .form-container {
+            flex: 1;
+            margin: auto;
+            padding: 15px;
+        }
+
+        .form-container form {
+            max-width: 60%;
+            margin: auto;
+            align-items: center;
+            text-align: center;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #e1e3e6;
+            border-radius: 15px;
+            border: none;
+            outline: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            color: #e1e3e6;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        #login-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+        .switch {
+            height: fit-content;
+            margin-bottom: 0;
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-bottom: 20px;
+          }
+          
+          /* Hide default HTML checkbox */
+          .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          
+          /* The slider */
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          input:checked + .slider {
+            background-color: #2196F3;
+          }
+          
+          input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+          }
+          
+          input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+          }
+          
+          /* Rounded sliders */
+          .slider.round {
+            border-radius: 34px;
+          }
+          
+          .slider.round:before {
+            border-radius: 50%;
+          }
+    </style>
+</head>
+<body>
+    <div class="mx-auto box-container">
+
+        <div class="my-auto" id="ar-system">
+            <h3 class="plus-sans sevenhundred">Hi, {{ user.username }}!</h3>
+            <h4 class="my-4"><small style="color: #e1e3e69c;">Please login with your credentials</small></h4>
+        </div>
+
+        <div class="form-container">
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <input type="email" name="email" id="inputEmail" class="inputs" placeholder="Email address" value="{{ registration_form.email.value|default:'' }}" required autofocus>
+                <input type="text" name="emp_id" id="inputEmp_id" class="inputs" placeholder="Employee ID" value="{{ registration_form.emp_id.value|default:'' }}" required>
+                <input type="text" name="username" id="inputUsername" class="inputs" placeholder="Username" value="{{ registration_form.username.value|default:'' }}" required>
+                <input type="password" name="password1" id="inputPassword1" class="inputs" placeholder="Password" value="{{ registration_form.password1.value|default:'' }}" required>
+                <input type="password" name="password2" id="inputPassword2" class="inputs mb-4" placeholder="Re-enter password" value="{{ registration_form.password2.value|default:'' }}" required>
+                
+                <div style="display: flex; align-items: start;">
+                    <label class="switch">
+                        <input type="checkbox" name="is_admin" id="inputIs_admin"> 
+                        <span class="slider round"></span>
+                    </label>
+                    <div style="margin-left: 10px; vertical-align: middle;">
+                        Admin role?
+                    </div>
+                </div>
+                
+                <div style="justify-content: center;">
+                {{ registration_form.captcha }}
+                </div>
+
+                <button style="border-radius: 10px; width: 50%;" class="my-4" id="login-btn" type="submit">Register</button>
+            </form>
+
+                {% if registration_form.captcha.errors %}
+                        <p style="color: red;">Captcha is required</p>
+                {% endif %}
+
+                {% for field in registration_form %}
+                {% if field.name != 'captcha' %}
+                        {% for error in field.errors %}
+                        <p style="color: red;">{{error}}</p>
+                        {% endfor %}
+                {% endif %}
+                {% endfor %}
+                
+                {% if registration_form.non_field_errors %}
+                        <div style="color:red;">
+                        <p>{{registration_form.non_field_errors}}</p>
+                        </div>
+                {% endif %}
+
+        </div>
+    </div>
+</body>
+
+{% endblock content %}

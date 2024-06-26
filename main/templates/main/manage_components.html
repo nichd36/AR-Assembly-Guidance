@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+    
+<head>
+    <title>Manage Components</title>
+    <style>
+        body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                margin: 0;
+                flex-direction: column;
+                min-height: 100vh;
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+                color: #454545;
+        }
+
+        #ar-system {
+                flex: 1;
+                height: 50%;
+                padding: 15px;
+                text-align: start;
+                border-right: 2px solid #E0E1E1;
+        }
+
+        .box-container form {
+                max-width: 60%;
+                margin: auto;
+        }
+
+        .box-container input {
+                width: 90%;
+                padding: 10px;
+                margin-top: 15px;
+                font-size: 16px;
+                border-radius: 50px;
+                border: none;
+                outline: none;
+        }
+
+        /* input {
+                width: 100%;
+                padding: 10px;
+                margin: 8px 0;
+                box-sizing: border-box;
+                color: #e1e3e6;
+        } */
+
+        a {
+                text-decoration: none;
+        }
+
+        #login-btn {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px;
+                border: none;
+                width: 100%;
+                cursor: pointer;
+        }
+
+        .accounts-container {
+                height: 100%;
+                flex: 3;
+                padding: 15px;
+        }
+        .details-container {
+                display: flex;
+        }
+        .column-info {
+                margin: 5px;
+                border-radius: 15px;
+                padding: 7px;
+                overflow: hidden;
+                /* color: black; */
+                /* background-color: #F3F3F3;
+                border: 1px solid #c9c9c9; */
+        }
+        .column {
+                margin: 5px;
+                border-radius: 15px;
+                padding: 10px;
+                overflow: hidden;
+                border: 1px solid #ccc;
+        }
+        .column p {
+                margin: 0;
+        }
+        @media only screen and (min-width: 931px) {
+                /* hide the hamburger */
+                .navbar-toggler {
+                        display: none;
+                }
+                /* show all the nav-buttons */
+                .nav-button {
+                        display: inline;
+                }
+        }
+        @media only screen and (max-width: 930px) {
+                /* show everything with the hamburger class */
+                .navbar-toggler {
+                        display: inline;
+                }
+                /* hide all the nav-buttons */
+                .nav-button {
+                        display: none;
+                }
+        }
+        .info {
+                transition: 0.2s;
+        }
+        .info:hover{
+                box-shadow: 0px 0px 20px #b9dfff;
+                transform: scale(1.1);
+                z-index: 2;
+                transition-delay: 0ms !important;
+                background-size: 100% 100%;
+        }
+        .info:active{
+                box-shadow: 0px 0px 10px #b9dfffc1;
+                transform: scale(0.85);
+                z-index: 1;
+                transition-delay: 0ms !important;
+                background-size: 100% 100%;
+        }
+
+</style>
+</head>
+
+<body>
+    <div class="mx-auto box-container">
+
+        <div class="mt-4 pr-5" id="ar-system">
+                <h1>Manage Components</h1>
+                <div id="search-container" class="pb-2">
+                        <input style="color: black;" onkeyup="searchAccounts()" type="text" id="searchInput" placeholder="Search for a component">
+                </div>
+<!-- 
+                <a href="{% url 'add_component' %}" class="mt-4">
+                        <div class="button-link mt-4" style="width: 70%;">
+                                <p class="my-0 mx-auto plus-sans fivehundred">Add new +</p>
+                        </div>
+                </a> -->
+                    
+        </div>
+
+        <div class="accounts-container">
+                <div style="display: flex;">
+                        <div class="mx-4 column-info" style="width: 94%; text-align: left;">
+                                <strong>Component</strong>
+                        </div>
+        
+                        <div class="column-info" style="width: 6%;">
+                                <strong>Info</strong>
+                        </div>
+                    </div>
+
+                {% for component in components %}
+                <div class="details-container">
+                        <div class="pl-4 column" id="column-username" style="width: 94%; text-align: left;">
+                                <p class="pt-sans-bold">{{ component.name }}</p>
+                                <p>ID: {{ component.component_id }}</p>
+                        </div>
+                        
+                        <a href="{% url 'component_details_view' component.name component.component_id %}" class="column info" style="background-color: white; width: 6%; height: 50%; border-radius: 30px; border-width: 0.5px;">
+                                <div>
+                                        <strong class="plus-sans sevenhundred" style="color: #454545;">i</strong>
+                                </div>
+                        </a>
+                </div>
+                
+                <!-- <hr style=" margin: 5px 0 5px; color: #1e1e20; border-width: 2px;">  -->
+                {% endfor %}
+        </div>
+
+    </div>
+
+    <script>
+        function searchAccounts() {
+                var input, filter, ul, li, a, i, txtValue;
+                input = document.getElementById("searchInput");
+                filter = input.value.toUpperCase();
+                detailsContainers = document.getElementsByClassName('details-container');
+
+                for (i = 0; i < detailsContainers.length; i++) {
+                        console.log("ok");
+                        usernameColumn = detailsContainers[i].querySelector('#column-username');
+                        txtValue = usernameColumn.textContent || usernameColumn.innerText;
+
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                detailsContainers[i].style.display = "";
+                                
+                        } else {
+                                detailsContainers[i].style.display = "none";
+                        }
+                }
+        }
+    </script>
+
+
+</body>
+
+{% endblock content %}
